@@ -192,3 +192,40 @@ html { scroll-behavior: smooth; }
 .brand-panel {
   background: linear-gradient(135deg, oklch(0.4 0.2 272), oklch(0.5 0.19 262) 60%, oklch(0.56 0.16 245));
 }
+
+/* Motion helpers. WHY: small animations make the app feel alive. */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes shimmer {
+  0% { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+.fade-up { animation: fade-up 0.5s ease-out both; }
+
+/* Cards lift and glow a little on hover */
+.hover-lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px -14px oklch(0.47 0.2 268 / 0.4);
+}
+
+/* Loading placeholder (skeleton) */
+.skeleton {
+  border-radius: 0.75rem;
+  background: linear-gradient(90deg, var(--muted) 25%, var(--accent) 50%, var(--muted) 75%);
+  background-size: 1200px 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+/* Sections fade in when they scroll into view */
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.is-visible { opacity: 1; transform: none; }
+
+/* Accessibility: respect "reduce motion" in the user's system settings */
+@media (prefers-reduced-motion: reduce) {
+  .fade-up, .skeleton { animation: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .hover-lift:hover { transform: none; }
+}

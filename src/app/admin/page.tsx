@@ -5,6 +5,8 @@ import { parseFilters } from "@/lib/validations/complaint";
 import { PageHeader } from "@/components/page-header";
 import { StatCards } from "@/components/stat-cards";
 import { DashboardCharts } from "@/components/charts/dashboard-charts";
+import { RecurringIssues } from "@/components/recurring-issues";
+import { Reveal } from "@/components/reveal";
 import { FilterBar } from "@/components/filter-bar";
 import { ComplaintList } from "@/components/complaint-list";
 
@@ -17,7 +19,7 @@ export default async function AdminHome({
 }) {
   const user = await requireRole("DEPT_ADMIN");
   const f = parseFilters(await searchParams);
-  const view = f.view ?? "active"; // default: current complaints
+  const view = f.view ?? "active";
   const [items, data] = await Promise.all([
     listComplaints(user, { ...f, view }),
     getDashboardData(user),
@@ -26,8 +28,18 @@ export default async function AdminHome({
   return (
     <div className="space-y-6">
       <PageHeader title="Department dashboard" subtitle="Only your department's complaints are shown." />
-      <StatCards counts={data.counts} />
-      <DashboardCharts data={data} />
+      <div className="fade-up">
+        <StatCards counts={data.counts} />
+      </div>
+      <Reveal delay={60}>
+        <DashboardCharts data={data} />
+      </Reveal>
+      {/* SECURITY: only render when we know the department, or it would show ALL */}
+      {user.departmentId && (
+        <Reveal delay={100}>
+          <RecurringIssues departmentId={user.departmentId} />
+        </Reveal>
+      )}
       <h2 className="pt-2 text-lg font-semibold">Complaints</h2>
       <FilterBar showView defaultView="active" />
       <ComplaintList
