@@ -144,3 +144,51 @@ html { scroll-behavior: smooth; }
   .fade-up { animation: none; }
   html { scroll-behavior: auto; }
 }
+
+/* ---------- Brand theme (indigo). Later rules override the earlier :root. ---------- */
+:root {
+  --radius: 0.75rem;
+  --background: oklch(0.985 0.004 265);
+  --foreground: oklch(0.22 0.04 268);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.04 268);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.04 268);
+  --primary: oklch(0.47 0.2 268);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.96 0.015 268);
+  --secondary-foreground: oklch(0.3 0.08 268);
+  --muted: oklch(0.96 0.008 268);
+  --muted-foreground: oklch(0.5 0.03 268);
+  --accent: oklch(0.95 0.025 268);
+  --accent-foreground: oklch(0.3 0.1 268);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0.008 268);
+  --input: oklch(0.9 0.01 268);
+  --ring: oklch(0.55 0.19 268);
+}
+
+/* WHY: connect the font variables from layout.tsx to Tailwind. */
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* WHY: headings use the heading font. Inside @layer base, so utility classes still win. */
+@layer base {
+  h1, h2, h3, h4 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.015em;
+  }
+}
+
+/* WHY: soft colored glow for the hero, and a gradient for brand panels. */
+.hero-bg {
+  background:
+    radial-gradient(60rem 28rem at 85% -10%, oklch(0.47 0.2 268 / 0.16), transparent 60%),
+    radial-gradient(40rem 24rem at -10% 15%, oklch(0.72 0.14 225 / 0.14), transparent 60%),
+    var(--background);
+}
+.brand-panel {
+  background: linear-gradient(135deg, oklch(0.4 0.2 272), oklch(0.5 0.19 262) 60%, oklch(0.56 0.16 245));
+}

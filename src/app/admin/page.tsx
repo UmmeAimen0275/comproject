@@ -1,8 +1,10 @@
 import { requireRole } from "@/lib/session";
-import { listComplaints, statusCounts } from "@/lib/queries";
+import { listComplaints } from "@/lib/queries";
+import { getDashboardData } from "@/lib/analytics";
 import { parseFilters } from "@/lib/validations/complaint";
 import { PageHeader } from "@/components/page-header";
 import { StatCards } from "@/components/stat-cards";
+import { DashboardCharts } from "@/components/charts/dashboard-charts";
 import { FilterBar } from "@/components/filter-bar";
 import { ComplaintList } from "@/components/complaint-list";
 
@@ -16,15 +18,17 @@ export default async function AdminHome({
   const user = await requireRole("DEPT_ADMIN");
   const f = parseFilters(await searchParams);
   const view = f.view ?? "active"; // default: current complaints
-  const [items, counts] = await Promise.all([
+  const [items, data] = await Promise.all([
     listComplaints(user, { ...f, view }),
-    statusCounts(user),
+    getDashboardData(user),
   ]);
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Department complaints" subtitle="Only your department's complaints are shown." />
-      <StatCards counts={counts} />
+      <PageHeader title="Department dashboard" subtitle="Only your department's complaints are shown." />
+      <StatCards counts={data.counts} />
+      <DashboardCharts data={data} />
+      <h2 className="pt-2 text-lg font-semibold">Complaints</h2>
       <FilterBar showView defaultView="active" />
       <ComplaintList
         items={items}

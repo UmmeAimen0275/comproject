@@ -1,8 +1,10 @@
 import { requireRole } from "@/lib/session";
-import { getFilterOptions, listComplaints, statusCounts } from "@/lib/queries";
+import { getFilterOptions, listComplaints } from "@/lib/queries";
+import { getDashboardData } from "@/lib/analytics";
 import { parseFilters } from "@/lib/validations/complaint";
 import { PageHeader } from "@/components/page-header";
 import { StatCards } from "@/components/stat-cards";
+import { DashboardCharts } from "@/components/charts/dashboard-charts";
 import { FilterBar } from "@/components/filter-bar";
 import { ComplaintList } from "@/components/complaint-list";
 
@@ -15,17 +17,18 @@ export default async function SuperHome({
 }) {
   const user = await requireRole("SUPER_ADMIN");
   const f = parseFilters(await searchParams);
-  const [items, counts, options] = await Promise.all([
+  const [items, data, options] = await Promise.all([
     listComplaints(user, f),
-    statusCounts(user),
+    getDashboardData(user),
     getFilterOptions(),
   ]);
 
   return (
     <div className="space-y-6">
-      <PageHeader title="All complaints" subtitle="Search and filter across every department." />
-      {/* Phase E adds the charts here */}
-      <StatCards counts={counts} />
+      <PageHeader title="Overview" subtitle="Analytics and every complaint across all departments." />
+      <StatCards counts={data.counts} />
+      <DashboardCharts data={data} showDepartments />
+      <h2 className="pt-2 text-lg font-semibold">All complaints</h2>
       <FilterBar showStatus categories={options.categories} departments={options.departments} />
       <ComplaintList
         items={items}

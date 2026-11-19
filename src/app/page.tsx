@@ -65,7 +65,7 @@ export default function HomePage() {
       </header>
 
       {/* Hero */}
-      <section className="relative overflow-hidden border-b bg-gradient-to-b from-primary/10 via-background to-background">
+      <section className="relative overflow-hidden border-b hero-bg">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:py-20 lg:grid-cols-2">
           <div className="fade-up space-y-6">
             <span className="inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1 text-xs font-medium text-primary">

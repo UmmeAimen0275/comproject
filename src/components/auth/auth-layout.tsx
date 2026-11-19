@@ -11,7 +11,7 @@ const POINTS = [
 export function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      <aside className="relative hidden flex-col justify-between overflow-hidden bg-primary p-10 text-primary-foreground lg:flex">
+      <aside className="relative hidden flex-col justify-between overflow-hidden brand-panel p-10 text-primary-foreground lg:flex">
         <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-white/10" />
         <div className="pointer-events-none absolute -bottom-32 -left-16 size-80 rounded-full bg-white/10" />
         <Link href="/" className="relative flex items-center gap-2 text-lg font-bold">
