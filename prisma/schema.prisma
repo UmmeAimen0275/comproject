@@ -1,0 +1,123 @@
+// Tells Prisma to generate TypeScript code for our database
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Which database to use. Values come from .env
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Fixed lists of allowed values
+enum Role {
+  STUDENT
+  DEPT_ADMIN
+  SUPER_ADMIN
+}
+
+enum Status {
+  PENDING
+  IN_PROGRESS
+  RESOLVED
+  REJECTED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+// One department = one administration office (Cafeteria, Library, ...)
+model Department {
+  id         String      @id @default(cuid())
+  name       String      @unique
+  slug       String      @unique
+  admins     User[]
+  categories Category[]
+  complaints Complaint[]
+}
+
+// A category belongs to ONE department. This link is the AUTO-ROUTING rule.
+model Category {
+  id           String      @id @default(cuid())
+  name         String      @unique
+  issues       String[]    // the predefined issue types shown in the dropdown
+  departmentId String
+  department   Department  @relation(fields: [departmentId], references: [id])
+  complaints   Complaint[]
+}
+
+// Everyone who logs in: student, department admin or super admin
+model User {
+  id           String             @id @default(cuid())
+  name         String
+  email        String             @unique
+  passwordHash String             // hashed, never plain text
+  role         Role               @default(STUDENT)
+  departmentId String?            // only filled for department admins
+  department   Department?        @relation(fields: [departmentId], references: [id])
+  createdAt    DateTime           @default(now())
+  complaints   Complaint[]        @relation("StudentComplaints")
+  updates      ComplaintUpdate[]
+  supports     ComplaintSupport[]
+}
+
+// The main table: one row per complaint
+model Complaint {
+  id           String             @id @default(cuid())
+  title        String
+  description  String
+  issueType    String
+  status       Status             @default(PENDING)
+  priority     Priority           @default(MEDIUM)
+  attachment   String?            // optional small image stored as text (data URL)
+  studentId    String
+  student      User               @relation("StudentComplaints", fields: [studentId], references: [id])
+  categoryId   String
+  category     Category           @relation(fields: [categoryId], references: [id])
+  departmentId String             // copied from the category at submit time
+  department   Department         @relation(fields: [departmentId], references: [id])
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  updates      ComplaintUpdate[]
+  supports     ComplaintSupport[]
+
+  @@index([departmentId, status])  // fast admin lists
+  @@index([studentId])             // fast "my complaints"
+}
+
+// Every admin response / status change (this is the timeline)
+model ComplaintUpdate {
+  id          String    @id @default(cuid())
+  complaintId String
+  complaint   Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  adminId     String
+  admin       User      @relation(fields: [adminId], references: [id])
+  message     String
+  newStatus   Status
+  createdAt   DateTime  @default(now())
+}
+
+// "Me too" votes. The unique rule stops one student voting twice.
+model ComplaintSupport {
+  id          String    @id @default(cuid())
+  complaintId String
+  complaint   Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  createdAt   DateTime  @default(now())
+
+  @@unique([complaintId, userId])
+}
+
+// Records sensitive actions (who did what)
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  targetId  String?
+  createdAt DateTime @default(now())
+}
