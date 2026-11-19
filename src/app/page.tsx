@@ -1,193 +1,220 @@
 import Link from "next/link";
 import {
-  ArrowRight,
-  BookOpen,
-  Building2,
-  CircleCheck,
-  Clock,
-  GraduationCap,
-  Lock,
-  Monitor,
-  Route,
-  School,
-  ShieldCheck,
-  TrendingUp,
-  UtensilsCrossed,
+  ArrowRight, BarChart3, BookOpen, CheckCircle2, ClipboardCheck, Clock, GraduationCap,
+  Lock, MessageSquareReply, Monitor, Route, ShieldCheck, Utensils,
 } from "lucide-react";
+import { CountUp } from "@/components/count-up";
+import { Reveal } from "@/components/reveal";
+import { DemoAccounts } from "@/components/demo-accounts";
 
-// WHY: static data, so the page never touches the database and never fails.
-const FEATURES = [
+const btnPrimary =
+  "inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90";
+const btnOutline =
+  "inline-flex h-11 items-center justify-center gap-2 rounded-lg border bg-card px-6 text-sm font-medium transition hover:bg-accent";
+
+const offices = [
+  { icon: Utensils, name: "Cafeteria", dept: "Cafeteria Administration", items: "Food quality, prices, variety, staff", tint: "bg-amber-100 text-amber-700" },
+  { icon: BookOpen, name: "Library", dept: "Library Administration", items: "Books, seating, hours, librarian", tint: "bg-sky-100 text-sky-700" },
+  { icon: Monitor, name: "Labs and IT", dept: "Laboratory / IT Administration", items: "Computers, internet, projectors, software", tint: "bg-violet-100 text-violet-700" },
+  { icon: GraduationCap, name: "Teaching", dept: "Academic Administration", items: "Late lectures, notes, explanations", tint: "bg-emerald-100 text-emerald-700" },
+];
+
+const steps = [
+  { icon: ClipboardCheck, title: "Submit", text: "Choose a category and an issue type. Add a photo if it helps." },
+  { icon: Route, title: "We route it", text: "The system sends it to the correct administration office." },
+  { icon: MessageSquareReply, title: "Get an answer", text: "Read the response and follow every status change." },
+];
+
+const features = [
   { icon: Route, title: "Automatic routing", text: "Pick a category. The right department gets it. No guessing." },
   { icon: Clock, title: "Live status tracking", text: "Pending, in progress, resolved or rejected, with a full timeline." },
-  { icon: ShieldCheck, title: "Private by design", text: "Students see only their own complaints. Admins see only their department." },
-  { icon: Lock, title: "Secure sign in", text: "Hashed passwords, role checks on the server and rate limiting." },
-  { icon: TrendingUp, title: "Clear analytics", text: "Charts show which departments need attention the most." },
-  { icon: CircleCheck, title: "Reasons are required", text: "Every resolved or rejected complaint comes with an explanation." },
+  { icon: Lock, title: "Private by design", text: "Students see only their own complaints. Admins see only their department." },
+  { icon: ShieldCheck, title: "Secure sign in", text: "Hashed passwords, role checks on the server and rate limiting." },
+  { icon: BarChart3, title: "Clear analytics", text: "Charts show which departments need attention the most." },
+  { icon: CheckCircle2, title: "Reasons are required", text: "Every resolved or rejected complaint comes with an explanation." },
 ];
 
-const STEPS = [
-  { n: "1", title: "Submit", text: "Choose a category and an issue type. Add a photo if it helps." },
-  { n: "2", title: "We route it", text: "The system sends it to the correct administration office." },
-  { n: "3", title: "Get an answer", text: "Read the response and follow every status change." },
-];
-
-const DEPARTMENTS = [
-  { icon: UtensilsCrossed, name: "Cafeteria", office: "Cafeteria Administration" },
-  { icon: BookOpen, name: "Library", office: "Library Administration" },
-  { icon: Monitor, name: "Laboratories & IT", office: "Laboratory / IT Administration" },
-  { icon: School, name: "Teaching & Academic", office: "Academic Administration" },
-];
-
-const btn =
-  "inline-flex h-11 items-center justify-center gap-2 rounded-lg px-5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
-
-export default function HomePage() {
+export default function Home() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Top bar */}
+      {/* Navbar: sticky, blurred, fits a phone */}
       <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <Link href="/" className="flex items-center gap-2 font-bold">
             <span className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground">
-              <GraduationCap className="size-4" />
+              <MessageSquareReply className="size-4" />
             </span>
             CampusConnect
           </Link>
-          <nav className="flex items-center gap-2">
-            <a href="#how" className="hidden rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-foreground sm:block">
-              How it works
-            </a>
-            <Link href="/login" className={`${btn} h-9 bg-primary text-primary-foreground hover:bg-primary/90`}>
-              Sign in
+          <nav className="flex items-center gap-1 text-sm sm:gap-2">
+            <a href="#demo" className="hidden rounded-md px-3 py-2 hover:bg-accent sm:block">Demo accounts</a>
+            <Link href="/login" className="rounded-md px-3 py-2 hover:bg-accent">Sign in</Link>
+            <Link href="/register" className="rounded-lg bg-primary px-3 py-2 font-medium text-primary-foreground hover:opacity-90 sm:px-4">
+              Get started
             </Link>
           </nav>
         </div>
       </header>
 
       {/* Hero */}
-      <section className="relative overflow-hidden border-b hero-bg">
+      <section className="hero-bg overflow-hidden">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:py-20 lg:grid-cols-2">
-          <div className="fade-up space-y-6">
-            <span className="inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1 text-xs font-medium text-primary">
-              <span className="size-2 rounded-full bg-primary" /> Smart campus complaint system
+          <div className="fade-up text-center lg:text-left">
+            <span className="inline-block rounded-full border bg-card px-4 py-1.5 text-xs font-medium text-primary">
+              Smart campus complaint system
             </span>
-            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">
-              Your voice reaches the <span className="text-primary">right office</span>, fast.
+            <h1 className="mt-5 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+              Your voice reaches the{" "}
+              <span className="bg-gradient-to-r from-indigo-600 to-sky-500 bg-clip-text text-transparent">right office</span>, fast.
             </h1>
-            <p className="max-w-lg text-base text-muted-foreground sm:text-lg">
-              Report a problem on campus in one minute. CampusConnect sends it to the correct
-              department and keeps you updated until it is solved.
+            <p className="mx-auto mt-5 max-w-xl text-base text-muted-foreground sm:text-lg lg:mx-0">
+              Report a problem on campus in one minute. CampusConnect sends it to the correct department and keeps you updated until it is solved.
             </p>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/register" className={`${btn} bg-primary text-primary-foreground shadow-sm hover:bg-primary/90`}>
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
+              <Link href="/register" className={btnPrimary}>
                 Get started <ArrowRight className="size-4" />
               </Link>
-              <Link href="/login" className={`${btn} border bg-background hover:bg-muted`}>
-                Sign in
-              </Link>
+              <a href="#demo" className={btnOutline}>Try a demo account</a>
             </div>
           </div>
 
-          {/* A sample complaint card (static preview) */}
-          <div className="fade-up fade-up-2 mx-auto w-full max-w-md">
-            <div className="rounded-2xl border bg-card p-5 shadow-xl">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="font-semibold">Projector not working in Lab 3</p>
-                  <p className="text-sm text-muted-foreground">Laboratories & IT · Projector problems</p>
-                </div>
-                <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">
-                  In progress
-                </span>
-              </div>
-              <ol className="relative mt-5 ml-3 space-y-5 border-l pl-6 text-sm">
-                <li className="relative">
-                  <span className="absolute -left-[31px] top-1 size-3 rounded-full bg-primary ring-4 ring-card" />
-                  <p className="font-medium">Complaint submitted</p>
-                  <p className="text-xs text-muted-foreground">Routed to IT Administration</p>
+          {/* Sample complaint card with a status timeline */}
+          <div className="float mx-auto w-full max-w-md rounded-2xl border bg-card p-5 shadow-xl">
+            <p className="text-xs text-muted-foreground">Laboratories and IT · Projector problems</p>
+            <p className="mt-1 font-semibold">Projector not working in Lab 3</p>
+            <span className="mt-2 inline-block rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
+              In progress
+            </span>
+            <ol className="mt-5 space-y-4 border-l pl-5">
+              {[
+                { t: "Complaint submitted", s: "Routed to IT Administration", c: "bg-indigo-600" },
+                { t: "Status: In progress", s: "A technician will fix it today.", c: "bg-blue-500" },
+                { t: "Resolved", s: "You will see the reason here.", c: "bg-muted-foreground/40" },
+              ].map((x) => (
+                <li key={x.t} className="relative">
+                  <span className={`absolute -left-[26px] top-1 size-3 rounded-full ${x.c}`} />
+                  <p className="text-sm font-medium">{x.t}</p>
+                  <p className="text-xs text-muted-foreground">{x.s}</p>
                 </li>
-                <li className="relative">
-                  <span className="absolute -left-[31px] top-1 size-3 rounded-full bg-blue-500 ring-4 ring-card" />
-                  <p className="font-medium">Status: In progress</p>
-                  <p className="mt-1 rounded-lg bg-muted p-2 text-xs">A technician will fix it today.</p>
-                </li>
-                <li className="relative">
-                  <span className="absolute -left-[31px] top-1 size-3 rounded-full bg-emerald-500 ring-4 ring-card" />
-                  <p className="font-medium">Resolved</p>
-                </li>
-              </ol>
-            </div>
+              ))}
+            </ol>
           </div>
         </div>
       </section>
 
-      {/* Departments */}
-      <section className="mx-auto max-w-6xl px-4 py-14">
-        <h2 className="text-center text-2xl font-bold tracking-tight">Four offices, one simple form</h2>
-        <p className="mx-auto mt-2 max-w-xl text-center text-sm text-muted-foreground">
-          Each category belongs to one department. You never have to know who to contact.
-        </p>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {DEPARTMENTS.map(({ icon: Icon, name, office }) => (
-            <div key={name} className="rounded-xl border bg-card p-5 shadow-xs transition hover:-translate-y-1 hover:shadow-md">
-              <span className="mb-3 grid size-10 place-items-center rounded-lg bg-primary/10 text-primary">
-                <Icon className="size-5" />
-              </span>
-              <h3 className="font-semibold">{name}</h3>
-              <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                <Building2 className="size-3" /> {office}
-              </p>
+      {/* Counters */}
+      <section className="border-y bg-card">
+        <div className="mx-auto grid max-w-4xl grid-cols-3 gap-4 px-4 py-8 text-center">
+          {[
+            { n: 4, l: "Departments" },
+            { n: 3, l: "User roles" },
+            { n: 4, l: "Status stages" },
+          ].map((x) => (
+            <div key={x.l}>
+              <p className="text-3xl font-extrabold text-primary sm:text-4xl"><CountUp to={x.n} /></p>
+              <p className="text-xs text-muted-foreground sm:text-sm">{x.l}</p>
             </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Offices */}
+      <section className="mx-auto max-w-6xl px-4 py-16">
+        <Reveal>
+          <h2 className="text-center text-3xl font-bold">Four offices, one simple form</h2>
+          <p className="mx-auto mt-2 max-w-xl text-center text-muted-foreground">
+            Each category belongs to one department. You never have to know who to contact.
+          </p>
+        </Reveal>
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {offices.map((o, i) => (
+            <Reveal key={o.name} delay={i * 80}>
+              <div className="hover-lift h-full rounded-xl border bg-card p-5">
+                <span className={`mb-4 grid size-11 place-items-center rounded-xl ${o.tint}`}>
+                  <o.icon className="size-5" />
+                </span>
+                <h3 className="font-semibold">{o.name}</h3>
+                <p className="text-xs font-medium text-primary">{o.dept}</p>
+                <p className="mt-2 text-sm text-muted-foreground">{o.items}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
       </section>
 
       {/* How it works */}
-      <section id="how" className="border-y bg-muted/40">
-        <div className="mx-auto max-w-6xl px-4 py-14">
-          <h2 className="text-center text-2xl font-bold tracking-tight">How it works</h2>
-          <div className="mt-8 grid gap-6 sm:grid-cols-3">
-            {STEPS.map((s) => (
-              <div key={s.n} className="text-center">
-                <span className="mx-auto grid size-12 place-items-center rounded-full bg-primary text-lg font-bold text-primary-foreground">
-                  {s.n}
+      <section className="bg-muted/50 px-4 py-16">
+        <Reveal>
+          <h2 className="text-center text-3xl font-bold">How it works</h2>
+        </Reveal>
+        <div className="mx-auto mt-10 grid max-w-5xl gap-6 md:grid-cols-3">
+          {steps.map((s, i) => (
+            <Reveal key={s.title} delay={i * 100}>
+              <div className="relative h-full rounded-xl border bg-card p-6 text-center">
+                <span className="absolute -top-3 left-1/2 grid size-7 -translate-x-1/2 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                  {i + 1}
                 </span>
-                <h3 className="mt-3 font-semibold">{s.title}</h3>
+                <s.icon className="mx-auto mb-3 size-8 text-primary" />
+                <h3 className="font-semibold">{s.title}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{s.text}</p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="mx-auto max-w-6xl px-4 py-14">
-        <h2 className="text-center text-2xl font-bold tracking-tight">Built to be fair, fast and safe</h2>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map(({ icon: Icon, title, text }) => (
-            <div key={title} className="rounded-xl border bg-card p-5 shadow-xs transition hover:shadow-md">
-              <Icon className="size-6 text-primary" />
-              <h3 className="mt-3 font-semibold">{title}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{text}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>
 
+      {/* Features */}
+      <section className="mx-auto max-w-6xl px-4 py-16">
+        <Reveal>
+          <h2 className="text-center text-3xl font-bold">Built to be fair, fast and safe</h2>
+        </Reveal>
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {features.map((f, i) => (
+            <Reveal key={f.title} delay={(i % 3) * 80}>
+              <div className="hover-lift flex h-full gap-4 rounded-xl border bg-card p-5">
+                <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-accent text-primary">
+                  <f.icon className="size-5" />
+                </span>
+                <div>
+                  <h3 className="font-semibold">{f.title}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{f.text}</p>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* Demo accounts */}
+      <section id="demo" className="scroll-mt-20 bg-muted/50 px-4 py-16">
+        <div className="mx-auto max-w-5xl">
+          <Reveal>
+            <h2 className="text-center text-3xl font-bold">Try it in one click</h2>
+            <p className="mx-auto mb-8 mt-2 max-w-xl text-center text-muted-foreground">
+              Sign in as any role to see what each one can and cannot do.
+            </p>
+          </Reveal>
+          <DemoAccounts />
+        </div>
+      </section>
+
       {/* Call to action */}
-      <section className="mx-auto max-w-6xl px-4 pb-14">
-        <div className="rounded-2xl bg-primary px-6 py-10 text-center text-primary-foreground">
-          <h2 className="text-2xl font-bold">Ready to be heard?</h2>
-          <p className="mx-auto mt-2 max-w-md text-sm opacity-90">
+      <section className="px-4 py-16">
+        <div className="brand-panel mx-auto max-w-4xl rounded-2xl px-6 py-10 text-center text-white">
+          <h2 className="text-2xl font-bold sm:text-3xl">Ready to be heard?</h2>
+          <p className="mx-auto mt-2 max-w-md text-white/80">
             Create a free student account and send your first complaint today.
           </p>
-          <Link href="/register" className={`${btn} mt-5 bg-background text-foreground hover:bg-background/90`}>
+          <Link
+            href="/register"
+            className="mt-6 inline-flex h-11 items-center justify-center rounded-lg bg-white px-6 text-sm font-semibold text-indigo-700 transition hover:scale-105"
+          >
             Create student account
           </Link>
         </div>
       </section>
 
-      <footer className="border-t py-6 text-center text-xs text-muted-foreground">
+      <footer className="border-t py-6 text-center text-sm text-muted-foreground">
         CampusConnect · BIIT Software Engineering Society Competition
       </footer>
     </div>

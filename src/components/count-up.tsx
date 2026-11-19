@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-// Counts from 0 to a number with an "ease-out" curve (fast, then slow)
-export function CountUp({ to, duration = 700 }: { to: number; duration?: number }) {
+// Counts from 0 up to a number (fast at first, then slow)
+export function CountUp({ to, duration = 900 }: { to: number; duration?: number }) {
   const [n, setN] = useState(0);
 
   useEffect(() => {
